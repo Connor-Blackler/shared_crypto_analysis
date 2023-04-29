@@ -1,17 +1,17 @@
-from .glassnode import GlassnodeBlockchain
-from .twelvedata import TwelveDatBlockchain
+from crypto_requests.indicators.glassnode import GlassnodeIndicator
+from crypto_requests.indicators.twelvedata import TwelveDataIndicator
 
 
-class BlockchainProviderHolder():
+class IndicatorsProviderHolder():
     def __init__(self) -> None:
 
-        self._glassnode = GlassnodeBlockchain()
+        self._glassnode = GlassnodeIndicator()
         self.__glassnode_methods = [f for f in dir(
-            GlassnodeBlockchain) if not f.startswith('_')]
+            GlassnodeIndicator) if not f.startswith('_')]
 
-        self._twelvedata = TwelveDatBlockchain()
-        self.__twelvedata_methods = [f for f in dir(
-            TwelveDatBlockchain) if not f.startswith('_')]
+        self._twelvedata = TwelveDataIndicator()
+        self.__twlevedata_methods = [f for f in dir(
+            TwelveDataIndicator) if not f.startswith('_')]
 
     def __getattr__(self, func):
         """Delegate calls to the API if the API has the method"""
@@ -19,7 +19,7 @@ class BlockchainProviderHolder():
             if func in self.__glassnode_methods:
                 return getattr(self._glassnode, func)(*args, **kwargs)
 
-            elif func in self.__twelvedata_methods:
+            elif func in self.__twlevedata_methods:
                 return getattr(self._twelvedata, func)(*args, **kwargs)
 
             else:

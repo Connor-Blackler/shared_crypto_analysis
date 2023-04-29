@@ -1,5 +1,5 @@
 from crypto_requests.market.glassnode import GlassnodeMarket
-from crypto_requests.market.twlevedata import TwelveDataMarket
+from crypto_requests.market.twelvedata import TwelveDataMarket
 
 
 class MarketProviderHolder():
@@ -10,7 +10,7 @@ class MarketProviderHolder():
             GlassnodeMarket) if not f.startswith('_')]
 
         self._twelvedata = TwelveDataMarket()
-        self.__twlevedata_methods = [f for f in dir(
+        self.__twelvedata_methods = [f for f in dir(
             TwelveDataMarket) if not f.startswith('_')]
 
     def __getattr__(self, func):
@@ -19,7 +19,7 @@ class MarketProviderHolder():
             if func in self.__glassnode_methods:
                 return getattr(self._glassnode, func)(*args, **kwargs)
 
-            elif func in self.__twlevedata_methods:
+            elif func in self.__twelvedata_methods:
                 return getattr(self._twelvedata, func)(*args, **kwargs)
 
             else:

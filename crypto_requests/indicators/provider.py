@@ -1,5 +1,5 @@
 from .glassnode import GlassnodeIndicator
-from .twlevedata import TwelveDataIndicator
+from .twelvedata import TwelveDataIndicator
 
 
 class IndicatorsProviderHolder():
@@ -10,7 +10,7 @@ class IndicatorsProviderHolder():
             GlassnodeIndicator) if not f.startswith('_')]
 
         self._twelvedata = TwelveDataIndicator()
-        self.__twlevedata_methods = [f for f in dir(
+        self.__twelvedata_methods = [f for f in dir(
             TwelveDataIndicator) if not f.startswith('_')]
 
     def __getattr__(self, func):
@@ -19,7 +19,7 @@ class IndicatorsProviderHolder():
             if func in self.__glassnode_methods:
                 return getattr(self._glassnode, func)(*args, **kwargs)
 
-            elif func in self.__twlevedata_methods:
+            elif func in self.__twelvedata_methods:
                 return getattr(self._twelvedata, func)(*args, **kwargs)
 
             else:

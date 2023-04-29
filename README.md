@@ -1,4 +1,4 @@
-# crypto
+# Crypto analysis
 
 A shared reposity containing:
 

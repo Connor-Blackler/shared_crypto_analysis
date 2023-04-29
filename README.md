@@ -1,2 +1,6 @@
 # crypto
-A repo that handles all crypto
+
+A shared reposity containing:
+
+- API Request for crypto indicators
+- API Request for crypto mining

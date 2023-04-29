@@ -2,24 +2,38 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 
 
-class MarketAPI(Enum):
-    TWELVE_DATA = auto()
+class MarketAPIID(Enum):
+    TWELVE_DATA = auto(),
+    GLASSNODE = auto()
 
 
-class MarketProvider(ABC):
+class MarketAPI(ABC):
     @abstractmethod
-    def get_list(self) -> dict:
-        """Returns a dictionary of all crypto lists provided by the API"""
-
-    @abstractmethod
-    def get_specific(self, coin: str) -> dict:
-        """returns a dictionary of a specific crypto"""
+    def API_type(self) -> MarketAPIID:
+        """Returns the MarketAPI enum that correlates to this API"""
 
     @abstractmethod
-    def get_correl(self, symbol_a: str, symbol_b: str, interval: str, duration: str) -> dict:
+    def _API_URL(self) -> str:
+        """Returns the URL used with this API"""
+
+    @abstractmethod
+    def _API_KEY(self) -> str:
+        """Returns the API key used with this API"""
+
+    @abstractmethod
+    def _format(self) -> dict:
+        """Returns the format used with this API"""
+
+    @abstractmethod
+    def _get_headers(self) -> dict:
+        """Returns the header used with this API"""
+
+    @abstractmethod
+    def send_api_request(self, method: str, additional_url: str, params: dict) -> str:
         """
-        returns the correl between:
-        symbol_a = ETH
-        symbol_b = USD
-        duration = 1min / 1h / 1day / 1week / 1month
+        Performs the API request
+
+        method: GET, POST
+        Additional_url: url added to the API_URL (/...)
+        params: params to be sent to the url
         """

@@ -1,9 +1,11 @@
 {
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true
   },
-  "python.formatting.provider": "none",
+  "python.formatting.provider": "autopep8",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,

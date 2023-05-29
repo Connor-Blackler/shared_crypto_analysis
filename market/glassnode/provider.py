@@ -1,6 +1,6 @@
 import requests
 from market.shared_market_provider import MarketAPIID, MarketAPI
-from shared_python.shared_passwords.shared_password import passwords_repo
+from shared_python.shared_passwords.shared_password import PasswordRepo
 
 
 class Glassnode(MarketAPI):
@@ -8,7 +8,7 @@ class Glassnode(MarketAPI):
         super().__init__()
 
         self.__API_URL = "https://api.glassnode.com/"
-        self.__API_KEY = passwords_repo().get_password_key("GLASSNODE_API_KEY")
+        self.__API_KEY = PasswordRepo().get_password_key("GLASSNODE_API_KEY")
 
     def API_type(self) -> MarketAPIID:
         return MarketAPIID.GLASSNODE

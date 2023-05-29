@@ -1,6 +1,10 @@
 import datetime
 import time
 from crypto_requests.request import *
+from corrolation.create_corrolation import main
+main()
+
+exit()
 
 asset = "BTC"
 start_date = "2022-01-15"

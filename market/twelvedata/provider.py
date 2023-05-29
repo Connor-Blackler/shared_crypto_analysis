@@ -1,13 +1,13 @@
 import requests
 from market.shared_market_provider import MarketAPIID, MarketAPI
-from shared_python.shared_passwords.shared_password import passwords_repo
+from shared_python.shared_passwords.shared_password import PasswordRepo
 
 
 class TwelveData(MarketAPI):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__API_KEY = passwords_repo().get_password_key("TWELVE_DATA_API_KEY")
+        self.__API_KEY = PasswordRepo().get_password_key("TWELVE_DATA_API_KEY")
         self.__API_URL = "https://twelve-data1.p.rapidapi.com/"
 
     def API_type(self) -> MarketAPIID:

@@ -1,0 +1,7 @@
+{
+	"title": "Shared Crypto Analysis",
+	"image": "https://m.media-amazon.com/images/S/aplus-media-library-service-media/88379e78-4ba3-4795-8df4-3915d5fba322.__CR0,0,300,300_PT0_SX300_V1___.jpg",
+	"description": "A shared repo that contains various API request to automate gathering of quantative data; blockchain anaylsis (block count etc), indicator analysis (MVRV etc), markey analysis (market cap etc)",
+	"language": ["Python"],
+	"language_bg": ["#3572A5"]
+}

@@ -1,7 +1,10 @@
+from corrolation.create_corrolation import main
 import datetime
 import time
 from crypto_requests.request import *
-from corrolation.create_corrolation import main
+import ratios.crypto_visualizer
+exit()
+
 main()
 
 exit()

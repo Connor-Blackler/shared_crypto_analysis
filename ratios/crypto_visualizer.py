@@ -145,14 +145,16 @@ base_data = download_data(
 
 assets = []
 
-for asset in desired_assets:
+for asset in ["BTC"]:
     data = download_data(asset, base_asset_name,
                          start_date, end_date, interval)
 
     # Adjust the 'src' calculation to hlc3
     src_data = (data['High'] + data['Low'] + data['Close']) / 3
+    base_data_hlc3 = (base_data['High'] +
+                      base_data['Low'] + base_data['Close']) / 3
 
-    asset_obj = Asset(name=asset, src=src_data, base=base_data['Close'], high=data['High'], low=data['Low'],
+    asset_obj = Asset(name=asset, src=src_data, base=base_data_hlc3, high=data['High'], low=data['Low'],
                       lookback=365, alpha_period=30, adr_length=14)
 
     print(asset_obj)

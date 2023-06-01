@@ -1,5 +1,43 @@
 import numpy as np
+import pandas as pd
 from .binance_api import download_data
+
+desired_assets = ["BTC",
+                  "ETH",
+                  "BNB",
+                  "XRP",
+                  "ADA",
+                  "DOGE",
+                  "SOL",
+                  "MATIC",
+                  "LTC",
+                  "TRX",
+                  "DOT",
+                  "SHIB",
+                  "AVAX",
+                  "LINK",
+                  "ATOM",
+                  "UNI",
+                  "XMR",
+                  "XLM",
+                  "BCH",
+                  "ICP",
+                  "LDO",
+                  "FIL",  # "APT",
+                  "HBAR",
+                  "NEAR",  # "ARB",
+                  "VET",
+                  "QNT",
+                  "APE",
+                  "ALGO",
+                  "GRT",
+                  "FTM",
+                  "SAND",
+                  "EOS",
+                  "MANA",  # "RPL",
+                  "EGLD",
+                  "THETA",
+                  "AAVE"]
 
 
 def stat_calc(src, lookback):
@@ -10,7 +48,7 @@ def stat_calc(src, lookback):
     negative_returns_array = []
     positive_returns_array = []
 
-    for i in range(len(returns_array) - 1, len(returns_array) - lookback - 2, -1):
+    for i in range(len(daily_return) - 1, len(daily_return) - lookback - 2, -1):
         returns_array.append(daily_return[i])
         if daily_return[i] <= 0.0:
             negative_returns_array.append(daily_return[i])
@@ -37,15 +75,27 @@ start_date = '2021-06-01'
 end_date = '2023-06-02'
 interval = '1d'
 
-data = download_data(asset_name, base_asset_name,
-                     start_date, end_date, interval)
 
-src = (data['High'] + data['Low'] + data['Close']) / 3
-# src = data['Close']
+output = []
 
-lookback = 30
+for asset in desired_assets:
+    data = download_data(asset, base_asset_name,
+                         start_date, end_date, interval)
 
-results = stat_calc(src, lookback)
-print("sharp: ", results[0], "\n",
-      "sortino: ", results[1], "\n",
-      "omega: ", results[2], "\n")
+    src = (data['High'] + data['Low'] + data['Close']) / 3
+
+    lookback = 30
+
+    results = stat_calc(src, lookback)
+    result_d = {
+        "asset": asset,
+        "sharp": results[0],
+        "sortino": results[1],
+        "omega": results[2]
+    }
+    print(result_d)
+
+    output.append(result_d)
+
+df = pd.DataFrame(output)
+df.to_csv('ratios/output/asset_metrics_rolling_risk.csv', index=False)

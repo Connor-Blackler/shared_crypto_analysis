@@ -196,7 +196,7 @@ base_data = download_data(
 
 assets = []
 
-for asset in ["BTC"]:
+for asset in desired_assets:
     data = download_data(asset, base_asset_name,
                          start_date, end_date, interval)
 
@@ -223,4 +223,4 @@ data_dict = {
     "ADR": [f"{asset.adr:.2%}" for asset in assets]
 }
 df = pd.DataFrame(data_dict)
-df.to_csv('asset_metrics.csv', index=False)
+df.to_csv('ratios/output/asset_metrics_crypto_visualizer.csv', index=False)

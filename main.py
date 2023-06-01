@@ -2,6 +2,7 @@ from corrolation.create_corrolation import main
 import datetime
 import time
 from crypto_requests.request import *
+import ratios.rolling_risk
 import ratios.crypto_visualizer
 exit()
 

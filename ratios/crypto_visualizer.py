@@ -80,46 +80,96 @@ class Asset:
             f"sortino: {self.sortino:.2f}\n"
             f"omega: {self.omega:.2f}\n"
             f"zscore: {self.zscore.tail(1).values[0]:.2f}\n"
-            f"athdd: {self.athdd.tail(1).values[0]:.2%}\n"
+            f"athdd: {self.athdd.tail(1).values[0]:.0%}\n"
             f"adr: {self.adr:.2%}\n"
         )
 
     def f_beta(self) -> float:
         daily_return = self.src / self.src.shift(1) - 1
+        daily_return.iloc[0] = 0  # first day of data, avoid NaN
+
         daily_base_return = self.base / self.base.shift(1) - 1
-        returns_array = daily_return.tail(self.lookback)
-        returns_base_array = daily_base_return.tail(self.lookback)
+        daily_base_return.iloc[0] = 0  # first day of data, avoid NaN
+
+        returns_array = []
+        returns_base_array = []
+
+        for i in range(len(returns_array) - 1, len(returns_array) - self.lookback - 2, -1):
+            returns_array.append(daily_return[i])
+            returns_base_array.append(daily_base_return[i])
+
         return np.cov(returns_array, returns_base_array)[0, 1] / np.var(returns_base_array)
 
     def f_alpha(self) -> float:
         daily_return = self.src / self.src.shift(1) - 1
+        daily_return.iloc[0] = 0  # first day of data, avoid NaN
+
         daily_base_return = self.base / self.base.shift(1) - 1
-        returns_array = daily_return.tail(self.alpha_period)
-        returns_base_array = daily_base_return.tail(self.alpha_period)
-        return returns_array.sum() - returns_base_array.sum() * self.f_beta()
+        daily_base_return.iloc[0] = 0  # first day of data, avoid NaN
+
+        returns_array = []
+        returns_base_array = []
+
+        for i in range(len(returns_array) - 1, len(returns_array) - self.alpha_period - 2, -1):
+            returns_array.append(daily_return[i])
+            returns_base_array.append(daily_base_return[i])
+
+        return sum(returns_array) - sum(returns_base_array) * self.f_beta()
 
     def f_sharpe(self) -> float:
         daily_return = self.src / self.src.shift(1) - 1
-        returns_array = daily_return.tail(self.lookback)
-        standard_deviation = returns_array.std()
-        mean = returns_array.mean()
-        return round(mean / standard_deviation * np.sqrt(self.lookback), 2)
+        daily_return.iloc[0] = 0  # first day of data, avoid NaN
+
+        returns_array = []
+
+        for i in range(len(returns_array) - 1, len(returns_array) - self.lookback - 2, -1):
+            returns_array.append(daily_return[i])
+
+        # STAT CALCULATIONS
+        standard_deviation = np.std(returns_array)
+        mean = np.mean(returns_array)
+        sharpe = round(mean / standard_deviation * np.sqrt(self.lookback), 2)
+
+        return sharpe
 
     def f_sortino(self) -> float:
         daily_return = self.src / self.src.shift(1) - 1
-        returns_array = daily_return.tail(self.lookback)
-        negative_returns_array = returns_array[returns_array <= 0]
-        negative_returns_standard_deviation = negative_returns_array.std()
-        mean = returns_array.mean()
-        return round(mean / negative_returns_standard_deviation * np.sqrt(self.lookback), 2)
+        daily_return.iloc[0] = 0  # first day of data, avoid NaN
+
+        returns_array = []
+        negative_returns_array = []
+
+        for i in range(len(returns_array) - 1, len(returns_array) - self.lookback - 2, -1):
+            returns_array.append(daily_return[i])
+            if daily_return[i] <= 0.0:
+                negative_returns_array.append(daily_return[i])
+
+        # STAT CALCULATIONS
+        negative_returns_standard_deviation = np.std(negative_returns_array)
+        mean = np.mean(returns_array)
+        sortino = round(
+            mean / negative_returns_standard_deviation * np.sqrt(self.lookback), 2)
+
+        return sortino
 
     def f_omega(self) -> float:
         daily_return = self.src / self.src.shift(1) - 1
-        negative_returns_array = daily_return[daily_return <= 0]
-        positive_returns_array = daily_return[daily_return > 0]
-        positive_area = positive_returns_array.sum()
-        negative_area = negative_returns_array.sum() * (-1)
-        return round(positive_area / negative_area, 2)
+        daily_return.iloc[0] = 0  # first day of data, avoid NaN
+
+        negative_returns_array = []
+        positive_returns_array = []
+
+        for i in range(len(daily_return) - 1, len(daily_return) - self.lookback - 2, -1):
+            if daily_return[i] <= 0.0:
+                negative_returns_array.append(daily_return[i])
+            else:
+                positive_returns_array.append(daily_return[i])
+
+        positive_area = sum(positive_returns_array)
+        negative_area = sum(negative_returns_array) * (-1)
+        omega = round(positive_area / negative_area, 2)
+
+        return omega
 
     def f_zscore(self) -> pd.Series:
         sma = self.src.rolling(window=self.lookback).mean()
@@ -128,16 +178,17 @@ class Asset:
 
     def f_ath_dd(self) -> pd.Series:
         ath = self.src.max()
-        return self.src / ath - 1
+        return (self.src / ath - 1).apply(lambda x: np.floor(x * 100) / 100)
 
     def f_ADR(self) -> float:
-        return (self.high / self.low).tail(self.lookback).mean() - 1
+        adr = (self.high / self.low).rolling(window=self.adr_length).mean()
+        return adr.iloc[-1] - 1
 
 
 asset_name = 'BTC'
 base_asset_name = 'USDT'
 start_date = '2021-06-01'
-end_date = '2023-06-01'
+end_date = '2023-06-02'
 interval = '1d'
 
 base_data = download_data(
@@ -168,7 +219,7 @@ data_dict = {
     "Sortino": [f"{asset.sortino:.2f}" for asset in assets],
     "Omega": [f"{asset.omega:.2f}" for asset in assets],
     "ZScore": [f"{asset.zscore.tail(1).values[0]:.2f}" for asset in assets],
-    "ATHDD": [f"{asset.athdd.tail(1).values[0]:.2%}" for asset in assets],
+    "ATHDD": [f"{asset.athdd.tail(1).values[0]:.0%}" for asset in assets],
     "ADR": [f"{asset.adr:.2%}" for asset in assets]
 }
 df = pd.DataFrame(data_dict)

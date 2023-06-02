@@ -54,10 +54,10 @@ def main() -> None:
     correlation_table.loc['US10Y', 'Average'] = "{:.3f}".format(mean(us10y))
 
     # Save the correlation table to a CSV file
-    correlation_table.to_csv('./output/btc_correlation.csv')
+    correlation_table.to_csv('./corrolation/output/btc_correlation.csv')
 
     # Save the image DataFrame to a separate sheet in the CSV file
-    with pd.ExcelWriter('./output/btc_correlation.xlsx') as writer:
+    with pd.ExcelWriter('./corrolation/output/btc_correlation.xlsx') as writer:
         info_table = pd.DataFrame(columns=[""])
         info_table = info_table.rename_axis('')
 

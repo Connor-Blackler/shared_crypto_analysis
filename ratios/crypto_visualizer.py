@@ -23,9 +23,11 @@ desired_assets = ["BTC",
                   "BCH",
                   "ICP",
                   "LDO",
-                  "FIL",  # "APT",
+                  "FIL",
+                  "APT",
                   "HBAR",
-                  "NEAR",  # "ARB",
+                  "NEAR",
+                  "ARB",
                   "VET",
                   "QNT",
                   "APE",
@@ -34,7 +36,8 @@ desired_assets = ["BTC",
                   "FTM",
                   "SAND",
                   "EOS",
-                  "MANA",  # "RPL",
+                  "MANA",
+                  "RPL",
                   "EGLD",
                   "THETA",
                   "AAVE"]
@@ -177,8 +180,8 @@ class Asset:
         return (self.src - sma) / stdev
 
     def f_ath_dd(self) -> pd.Series:
-        ath = self.src.max()
-        return (self.src / ath - 1).apply(lambda x: np.floor(x * 100) / 100)
+        ath = self.src.cummax()
+        return (self.src / ath) - 1
 
     def f_ADR(self) -> float:
         adr = (self.high / self.low).rolling(window=self.adr_length).mean()
@@ -187,7 +190,7 @@ class Asset:
 
 asset_name = 'BTC'
 base_asset_name = 'USDT'
-start_date = '2021-06-01'
+start_date = '2010-01-01'
 end_date = '2023-06-02'
 interval = '1d'
 
@@ -205,8 +208,9 @@ for asset in desired_assets:
     base_data_hlc3 = (base_data['High'] +
                       base_data['Low'] + base_data['Close']) / 3
 
+    lookback = min(365, len(src_data) - 1)
     asset_obj = Asset(name=asset, src=src_data, base=base_data_hlc3, high=data['High'], low=data['Low'],
-                      lookback=365, alpha_period=30, adr_length=14)
+                      lookback=lookback, alpha_period=30, adr_length=14)
 
     print(asset_obj)
     assets.append(asset_obj)

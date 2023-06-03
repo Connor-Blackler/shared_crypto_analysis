@@ -9,5 +9,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
-  "prettier.documentSelectors": [".py", ".python", "python", "py", "Python"]
+  "prettier.documentSelectors": [".py", ".python", "python", "py", "Python"],
+  "python.testing.pytestArgs": ["."],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

@@ -1,9 +1,9 @@
+from main_app.wmain import Wmain
 from corrolation.create_corrolation import main
 import datetime
 import time
 from crypto_requests.request import *
 
-from main_app.wmain import Wmain
 wmain = Wmain(1200, 900)
 wmain.run()
 

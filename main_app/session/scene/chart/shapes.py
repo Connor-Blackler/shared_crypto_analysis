@@ -1,7 +1,7 @@
 from __future__ import annotations
 import uuid
 import math
-from ....context_wrapper import ContextWrapper
+from ....context_wrapper import ContextWrapper, path_provider
 from ....helpers import Color
 from shared_python.shared_math.geometry import Vec2, BezierPathA, BezierPath, BezierContour, BezierPoint
 
@@ -9,18 +9,36 @@ from shared_python.shared_math.geometry import Vec2, BezierPathA, BezierPath, Be
 class Shape:
     def __init__(self):
         self.id = uuid.uuid4()
-        self.path = BezierPathA()
-        self.color = Color(255, 255, 255)
+        self._path = BezierPathA()
+        self.stroke = Color(0, 0, 255)
+        self.stroke_thickness = 3.0
+        self.fill = Color(255, 0, 0)
+        self.context_path = path_provider()(
+            self.path, self.stroke, self.fill, self.stroke_thickness)
+
+    @property
+    def path(self) -> BezierPathA:
+        return self._path
+
+    @path.setter
+    def path(self, path: BezierPathA) -> None:
+        self._path = path
+        self.context_path.set_path(path)
 
     def contains(self, pos: Vec2) -> bool:
-        return self.path.contains(pos)
+        for path in self.context_path.path:
+            if path.contains(pos.x, pos.y):
+                return True
+
+        return False
 
     def translate(self, pos: Vec2):
         self.path.translate(pos)
+        self.context_path.translate(pos)
 
     def draw(self, context: ContextWrapper):
         context.set_color(self.color)
-        context.draw_path(self.path)
+        context.draw_path(self.context_path)
 
     @classmethod
     def construct_polygon(cls, origin: Vec2, radius: float, sides: int, color: Color) -> Shape:

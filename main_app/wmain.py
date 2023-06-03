@@ -51,8 +51,8 @@ class DrawArea:
 
         if button == glfw.MOUSE_BUTTON_RIGHT:
             if action == glfw.RELEASE:
-                self.session.add_shape(
-                    Shape.construct_polygon(pos, 40, 5, Color(50, 50, 50)))
+                # self.session.add_shape(
+                #     Shape.construct_polygon(pos, 40, 5, Color(50, 50, 50)))
 
                 self.session.add_shape(
                     Shape.construct_circle(pos, 40, Color(50, 50, 50)))

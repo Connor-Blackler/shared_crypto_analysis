@@ -20,8 +20,8 @@ class DrawArea:
         self.session = Session()
         self.toolbar = Toolbar(
             Vec2(0, 0), self.width, 32,
-            [Button("select", 32, 32, Color(200, 200, 200)),
-             Button("delete", 32, 32, Color(200, 200, 200))])
+            [Button("select", 32, 32, Color(255, 0, 0)),
+             Button("delete", 32, 32, Color(0, 255, 0))])
 
     def add_shape(self, shape):
         self.session.add_shape(shape)
@@ -51,7 +51,11 @@ class DrawArea:
 
         if button == glfw.MOUSE_BUTTON_RIGHT:
             if action == glfw.RELEASE:
-                self.session.add_shape(Shape(pos, 40, Color(50, 50, 50)))
+                self.session.add_shape(
+                    Shape.construct_polygon(pos, 40, 5, Color(50, 50, 50)))
+
+                self.session.add_shape(
+                    Shape.construct_circle(pos, 40, Color(50, 50, 50)))
 
     def cursor_pos_callback(self, window, xpos, ypos):
         if glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS:
@@ -64,12 +68,6 @@ class Wmain:
         self.width = width
         self.height = height
         self.draw_area = DrawArea(width, height)
-
-    def add_shape(self, shape):
-        self.draw_area.add_shape(shape)
-
-    def remove_shape(self, shape):
-        self.draw_area.remove_shape(shape)
 
     def run(self):
         with self.glfw_window(self.width, self.height) as window:

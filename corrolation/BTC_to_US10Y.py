@@ -54,7 +54,7 @@ def correlate_BTC_US10Y(from_date: datetime, to_date: datetime, rolling_amount: 
 
     # Save the image of the plot to desktop
     plt.savefig(
-        f'./output/US10Y_rolling_correlation_plot_{rolling_amount}.png')
+        f'./corrolation/output/US10Y_rolling_correlation_plot_{rolling_amount}.png')
 
     # Add annotation labels to the plot for hover display
     cursor = mplcursors.cursor(hover=True)

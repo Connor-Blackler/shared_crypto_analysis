@@ -53,7 +53,8 @@ def correlate_BTC_DXY(from_date: datetime, to_date: datetime, rolling_amount: in
     plt.grid(True)
 
     # Save the image of the plot to desktop
-    plt.savefig(f'./output/DXY_rolling_correlation_plot_{rolling_amount}.png')
+    plt.savefig(
+        f'./corrolation/output/DXY_rolling_correlation_plot_{rolling_amount}.png')
 
     # Add annotation labels to the plot for hover display
     cursor = mplcursors.cursor(hover=True)

@@ -12,5 +12,12 @@
   "prettier.documentSelectors": [".py", ".python", "python", "py", "Python"],
   "python.testing.pytestArgs": ["."],
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "files.exclude": {
+    ".git*": true,
+    ".pytest*": true,
+    "README.md": true,
+    "requirements.txt": true,
+    "thumbnail.json": true
+  }
 }

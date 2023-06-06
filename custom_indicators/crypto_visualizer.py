@@ -1,49 +1,12 @@
+from collections import defaultdict
+from datetime import datetime
 import pandas as pd
 import numpy as np
-from .binance_api import download_data
-
-desired_assets = ["BTC",
-                  "ETH",
-                  "BNB",
-                  "XRP",
-                  "ADA",
-                  "DOGE",
-                  "SOL",
-                  "MATIC",
-                  "LTC",
-                  "TRX",
-                  "DOT",
-                  "SHIB",
-                  "AVAX",
-                  "LINK",
-                  "ATOM",
-                  "UNI",
-                  "XMR",
-                  "XLM",
-                  "BCH",
-                  "ICP",
-                  "LDO",
-                  "FIL",
-                  "APT",
-                  "HBAR",
-                  "NEAR",
-                  "ARB",
-                  "VET",
-                  "QNT",
-                  "APE",
-                  "ALGO",
-                  "GRT",
-                  "FTM",
-                  "SAND",
-                  "EOS",
-                  "MANA",
-                  "RPL",
-                  "EGLD",
-                  "THETA",
-                  "AAVE"]
+from crypto_requests.request import get_historical_klines
+from .indicator_options import OptionsVisualizer
 
 
-class Asset:
+class _AssetCalc:
     def __init__(self, name: str, src: pd.Series, base: pd.Series, high: pd.Series, low: pd.Series,
                  lookback: int, alpha_period: int, adr_length: int):
         """
@@ -188,43 +151,46 @@ class Asset:
         return adr.iloc[-1] - 1
 
 
-asset_name = 'BTC'
-base_asset_name = 'USDT'
-start_date = '2010-01-01'
-end_date = '2023-06-02'
-interval = '1d'
+def get_inicator_crypto_visualizer_bulk(assets: list[str], options: OptionsVisualizer = OptionsVisualizer(),
+                                        quote_name: str = "USDT", start_date: str = "2010-01-01",
+                                        end_date: str = datetime.today().strftime('%Y-%m-%d'), interval: str = "1d"):
+    base_data = get_historical_klines("BTC",
+                                      quote_name,
+                                      start_date,
+                                      end_date,
+                                      interval)
+    data_dict = defaultdict(list)
 
-base_data = download_data(
-    asset_name, base_asset_name, start_date, end_date, interval)
+    for asset_name in assets:
+        data = get_historical_klines(asset_name,
+                                     quote_name,
+                                     start_date,
+                                     end_date,
+                                     interval)
 
-assets = []
+        src_data_hlc3 = (data['High'] + data['Low'] + data['Close']) / 3
+        base_data_hlc3 = (base_data['High'] +
+                          base_data['Low'] + base_data['Close']) / 3
 
-for asset in desired_assets:
-    data = download_data(asset, base_asset_name,
-                         start_date, end_date, interval)
+        lookback = min(options.lookback, len(src_data_hlc3) - 1)
+        asset_obj = _AssetCalc(name=asset_name, src=src_data_hlc3, base=base_data_hlc3, high=data['High'], low=data['Low'],
+                               lookback=lookback, alpha_period=options.alpha_period, adr_length=options.adr_length)
 
-    # Adjust the 'src' calculation to hlc3
-    src_data = (data['High'] + data['Low'] + data['Close']) / 3
-    base_data_hlc3 = (base_data['High'] +
-                      base_data['Low'] + base_data['Close']) / 3
+        data_dict["Asset"].append(asset_obj.name)
+        data_dict["Beta"].append(f"{asset_obj.beta:.2f}")
+        data_dict["Alpha"].append(f"{asset_obj.alpha:.2f}")
+        data_dict["Sharpe"].append(f"{asset_obj.sharpe:.2f}")
+        data_dict["Sortino"].append(f"{asset_obj.sortino:.2f}")
+        data_dict["Omega"].append(f"{asset_obj.omega:.2f}")
+        data_dict["ZScore"].append(f"{asset_obj.zscore.tail(1).values[0]:.2f}")
+        data_dict["ATHDD"].append(f"{asset_obj.athdd.tail(1).values[0]:.0%}")
+        data_dict["ADR"].append(f"{asset_obj.adr:.2%}")
 
-    lookback = min(365, len(src_data) - 1)
-    asset_obj = Asset(name=asset, src=src_data, base=base_data_hlc3, high=data['High'], low=data['Low'],
-                      lookback=lookback, alpha_period=30, adr_length=14)
+    return data_dict
 
-    print(asset_obj)
-    assets.append(asset_obj)
 
-data_dict = {
-    "Asset": [asset.name for asset in assets],
-    "Beta": [f"{asset.beta:.2f}" for asset in assets],
-    "Alpha": [f"{asset.alpha:.2f}" for asset in assets],
-    "Sharpe": [f"{asset.sharpe:.2f}" for asset in assets],
-    "Sortino": [f"{asset.sortino:.2f}" for asset in assets],
-    "Omega": [f"{asset.omega:.2f}" for asset in assets],
-    "ZScore": [f"{asset.zscore.tail(1).values[0]:.2f}" for asset in assets],
-    "ATHDD": [f"{asset.athdd.tail(1).values[0]:.0%}" for asset in assets],
-    "ADR": [f"{asset.adr:.2%}" for asset in assets]
-}
-df = pd.DataFrame(data_dict)
-df.to_csv('ratios/output/asset_metrics_crypto_visualizer.csv', index=False)
+def get_inicator_crypto_visualizer(asset_name: str, options: OptionsVisualizer = OptionsVisualizer(),
+                                   quote_name: str = "USDT", start_date: str = "2010-01-01",
+                                   end_date: str = datetime.today().strftime('%Y-%m-%d'), interval: str = "1d"):
+
+    return get_inicator_crypto_visualizer_bulk([asset_name], options, quote_name, start_date, end_date, interval)

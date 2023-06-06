@@ -36,6 +36,34 @@ def get_block_size_total(asset: str, start_date: int, end_date: int):
 """Market metrics"""
 
 
+def get_historical_klines(asset_name: str, base_asset_name: str, start_date: str, end_date: str, interval: str):
+    """
+    list of OHLCV values (Open time, Open, High, Low, Close, 
+    Volume, Close time, Quote asset volume, Number of trades, 
+    Taker buy base asset volume, Taker buy quote asset volume, Ignore)
+
+    Args:
+        asset_name (str): The name of the asset.
+        base_asset_name (str): The name of the base asset.
+        start_date (str): The start date of the historical data in the format 'YYYY-MM-DD'.
+        end_date (str): The end date of the historical data in the format 'YYYY-MM-DD'.
+        interval (str): The interval of the klines data (e.g., '1m', '1h', '1d').
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the historical klines data.
+
+    Raises:
+        Any exceptions raised by _market_provider.get_historical_klines.
+    """
+    return _market_provider.get_historical_klines(
+        asset_name,
+        base_asset_name,
+        start_date,
+        end_date,
+        interval
+    )
+
+
 def get_mvrv(asset: str, start_date: int, end_date: int):
     return _market_provider.get_mvrv(asset, start_date, end_date)
 

@@ -1,5 +1,6 @@
 from .glassnode import GlassnodeBlockchain
 from .twelvedata import TwelveDatBlockchain
+from .binance import BinanceBlockchain
 
 
 class BlockchainProviderHolder():
@@ -13,6 +14,10 @@ class BlockchainProviderHolder():
         self.__twelvedata_methods = [f for f in dir(
             TwelveDatBlockchain) if not f.startswith('_')]
 
+        self._binance = BinanceBlockchain()
+        self.__binance_methods = [f for f in dir(
+            BinanceBlockchain) if not f.startswith('_')]
+
     def __getattr__(self, func):
         """Delegate calls to the API if the API has the method"""
         def method(*args, **kwargs):
@@ -21,6 +26,9 @@ class BlockchainProviderHolder():
 
             elif func in self.__twelvedata_methods:
                 return getattr(self._twelvedata, func)(*args, **kwargs)
+
+            elif func in self.__binance_methods:
+                return getattr(self._binance, func)(*args, **kwargs)
 
             else:
                 raise AttributeError

@@ -2,11 +2,12 @@ from corrolation.create_corrolation import main
 import datetime
 import time
 from crypto_requests.request import *
+from indicator_rolling_risk_example import main as rolling_risk
+from indicator_crypto_visualizer_example import main as crypto_visualizer
 
-# import ratios.rolling_risk
-# import ratios.crypto_visualizer
+rolling_risk()
+crypto_visualizer()
 
-main()
 exit()
 
 asset = "BTC"

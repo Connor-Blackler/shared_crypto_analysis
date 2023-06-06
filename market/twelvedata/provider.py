@@ -31,26 +31,3 @@ class TwelveData(MarketAPI):
     def send_api_request(self, method: str, additional_url: str, params: dict) -> str:
         return requests.request(method, self._API_URL + additional_url,
                                 headers=self._get_headers(), params=self._format() | params)
-
-    def get_list(self) -> str:
-        """Returns a dictionary of all crypto on the market"""
-        return self.send_api_request("GET", "cryptocurrencies", {})
-
-    def get_specific(self, coin: str) -> str:
-        """
-        returns a dictionary of a specific crypto
-        coin: BTC -> (Bitcoin) / ETH (Ethereum)
-        """
-        return self.send_api_request("GET", "cryptocurrencies", {"currency_base": coin})
-
-    def get_correl(self, symbol_a: str, symbol_b: str, interval: str, duration: str) -> str:
-        additional_params = {
-            "symbol": f"{symbol_a}/{symbol_b}",
-            "interval": interval,
-            "time_period": duration,
-            "series_type_1": "open",
-            "series_type_2": "close",
-            "outputsize": "30"
-        }
-
-        return self.send_api_request("GET", "correl", additional_params)

@@ -1,5 +1,6 @@
-from crypto_requests.market.glassnode import GlassnodeMarket
-from crypto_requests.market.twelvedata import TwelveDataMarket
+from .glassnode import GlassnodeMarket
+from .twelvedata import TwelveDataMarket
+from .binance import BinanceMarket
 
 
 class MarketProviderHolder():
@@ -13,6 +14,10 @@ class MarketProviderHolder():
         self.__twelvedata_methods = [f for f in dir(
             TwelveDataMarket) if not f.startswith('_')]
 
+        self._binance = BinanceMarket()
+        self.__binance_methods = [f for f in dir(
+            BinanceMarket) if not f.startswith('_')]
+
     def __getattr__(self, func):
         """Delegate calls to the API if the API has the method"""
         def method(*args, **kwargs):
@@ -21,6 +26,9 @@ class MarketProviderHolder():
 
             elif func in self.__twelvedata_methods:
                 return getattr(self._twelvedata, func)(*args, **kwargs)
+
+            elif func in self.__binance_methods:
+                return getattr(self._binance, func)(*args, **kwargs)
 
             else:
                 raise AttributeError

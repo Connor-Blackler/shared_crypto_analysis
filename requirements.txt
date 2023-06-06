@@ -14,3 +14,4 @@ Shapely==2.0.1
 yfinance==0.2.18
 requests==2.31.0
 python-binance==1.0.17
+Quandl==3.7.0

@@ -1,9 +1,12 @@
-from corrolation.create_corrolation import main
-import datetime
-import time
-from crypto_requests.request import *
-from indicator_rolling_risk_example import main as rolling_risk
 from indicator_crypto_visualizer_example import main as crypto_visualizer
+from indicator_rolling_risk_example import main as rolling_risk
+from crypto_requests.request import *
+import time
+import datetime
+from corrolation.create_corrolation import main
+import custom_indicators.aroon
+exit()
+
 
 rolling_risk()
 crypto_visualizer()
